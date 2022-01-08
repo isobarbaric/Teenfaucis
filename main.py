@@ -17,14 +17,17 @@ for news_channel in news_sites:
             webpages.append(link)
 with open('link_database.txt', 'w') as storage:
     storage.write('\n'.join(webpages))
-identifier = ['post', 'article', 'entry', 'news']
 # want to collect all of the titles (p class) and links for headers (href)
 os.mkdir('news_channels')
 for website in webpages:
-    with open('news_channels/' + website + '.txt', 'w') as rn:
-        current_html = ''
-        try:
-            current_html = str(requests.get('https://' + website).content)
-        except Exception:
-            pass
-        rn.write(current_html)
+    os.mkdir('news_channels/' + website)
+    try:
+        current_html = str(requests.get('https://' + website).content)
+        with open('news_channels/' + website + '/html_page.txt', 'w') as rn:
+            rn.write(current_html)
+        with open('news_channels/' + website + '/beautifulSoup.txt', 'w') as rn:
+            soup = BeautifulSoup(current_html, 'lxml')
+            rn.write(soup.text)
+    except Exception:
+        pass
+identifier = ['post', 'article', 'entry', 'news']
