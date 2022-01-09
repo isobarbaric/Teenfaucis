@@ -29,7 +29,6 @@ def find_articles():
                         if (not anchor.has_attr('href')):
                             continue
                         potential_articles.append([tag, anchor])
-            overlap = False # used to determine whether a particular html tag is referencing the news headling or not 
             covid_related = False # used to determine whether a particular html tag is related to COVID or not 
             for article_title in potential_articles: # checking whether a particular article is a COVID article or not 
                 mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '').replace('\\', '')
@@ -37,18 +36,14 @@ def find_articles():
                 # mod_title is the title of the article (is cleaned up a bit from its rough and unfiltered form when it is obtained)
                 if 'css' in mod_title:
                     continue
-                for potential in identifier: # this for loop determines whether this particular article title is actually refering the news headline or not 
-                    if potential in article_title[0]['class']:
-                        overlap = True
                 for covid_word in covid_keywords: # this for loop checks to see if a particular article contains a reference to COVID or not 
                     if covid_word in mod_title:
                         covid_related = True
                 if covid_related: # if an article passes both tests, then it is a valid article and it is passed to the final data structure 
                     overall.append([mod_title, article_title[1]['href']]) 
                     covid_related = False
-                    overlap = False
     resultant = [] # final data structure that will contain the all COVID articles 
-    # below for loop ensures that article duplication does not occur and only 
+    # below for loop ensures that article duplication does not occur and an article is only saved once
     for elem in overall: 
         if elem not in resultant:
             resultant.append(elem)
