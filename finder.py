@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from collections import OrderedDict
 import os
 
 def find_articles():
@@ -10,8 +11,6 @@ def find_articles():
     overall = []
     for folder in structure:
         current_path = base_path + folder
-        # if (len(os.listdir(current_path)) == 0):
-        #     continue
         with open(current_path, 'r') as current_soup:
             soup = BeautifulSoup(current_soup.read(), 'lxml') 
             # element with class attribute -> grab href from anchor tag inside 
@@ -30,7 +29,7 @@ def find_articles():
             overlap = False
             covid_related = False
             for article_title in potential_articles:
-                mod_title = article_title[1].text.replace('\\n', '').replace('\t', '')
+                mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '')
                 mod_title = ' '.join(mod_title.split())
                 for potential in identifier:
                     if potential in article_title[0]['class']:
@@ -38,6 +37,12 @@ def find_articles():
                 for covid_word in covid_keywords:
                     if covid_word in mod_title:
                         covid_related = True
-                if overlap and covid_related:
+                if (covid_related):
                     overall.append([mod_title, article_title[1]['href']]) 
-    return overall 
+                    covid_related = False
+                    overlap = False
+    resultant = []
+    for elem in overall:
+        if elem not in resultant:
+            resultant.append(elem)
+    return resultant 
