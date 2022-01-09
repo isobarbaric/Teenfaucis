@@ -4,8 +4,6 @@ import os
 
 def crawl():
     html_page = requests.get('https://mediabiasfactcheck.com/pro-science/')
-    with open('scientific_pages.txt', 'w') as storage:
-        storage.write(str(html_page.content))
     soup = BeautifulSoup(html_page.content, 'lxml')
     suffixes = ['.com', '.org', '.edu', '.gov', '.int', '.co', '.net', '.au', '.us', '.uk', '.ne', 'news']
     news_sites = soup.find_all('span', {'style': 'font-size: 12pt;'})
@@ -19,16 +17,12 @@ def crawl():
                 webpages.append(link)
     with open('link_database.txt', 'w') as storage:
         storage.write('\n'.join(webpages))
-    # want to collect all of the titles (p class) and links for headers (href)
     os.mkdir('news_channels')
     for website in webpages:
-        os.mkdir('news_channels/' + website)
         try:
             current_html = str(requests.get('https://' + website).content)
-            with open('news_channels/' + website + '/html_page.txt', 'w') as rn:
+            with open('news_channels/' + website + 'html_page.txt', 'w') as rn:
                 rn.write(current_html)
-            with open('news_channels/' + website + '/beautifulSoup.txt', 'w') as rn:
-                soup = BeautifulSoup(current_html, 'lxml')
-                rn.write(soup.text)
         except Exception:
             pass
+    print("Located all Webpages...")
