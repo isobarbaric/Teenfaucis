@@ -7,7 +7,7 @@ If an IDE is being used, this can be done through the IDE itself, however, if no
 
 for Linux, Windows, and Mac:
 ```
-cd YOUR_PATH/Teenfaucis
+cd FILE_PATH/Teenfaucis
 rm -r news_channels
 ```
 
