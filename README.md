@@ -8,7 +8,7 @@ If an IDE is being used, this can be done through the IDE itself, however, if no
 for Linux, Windows, and Mac:
 ```
 cd Teenfaucis
-rm -r news_channels
+rm -rf news_channels
 ```
 
 After doing this, running ``main.py`` will run the project! Cheers!
