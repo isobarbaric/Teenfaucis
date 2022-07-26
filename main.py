@@ -1,10 +1,7 @@
-# import custom functions from files (code was split up to improve readability)
-from crawler import crawl
-from finder import find_articles 
+from ArticleFinder import ArticleFinder
 
-# executes the crawl() function from the crawler.py file to locate all trustworthy websites to find articles 
-crawl()
-# initializing list where all articles are stored 
-articles = find_articles()
-# printing all COVID-19 related articles out to the user
-print(articles)
+a = ArticleFinder('https://mediabiasfactcheck.com/pro-science/')
+b = ArticleFinder('https://mediabiasfactcheck.com/conspiracy/')
+
+print(a.articles)
+print(b.articles)
