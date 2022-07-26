@@ -1,1 +1,0 @@
-b'<html><body><h1>400 Bad request</h1>\r\n<p>Your browser sent an invalid request.\r\n<p>We highly recommend setting a meaningful User-Agent header.\r\n</body></html>\r\n\r\n'

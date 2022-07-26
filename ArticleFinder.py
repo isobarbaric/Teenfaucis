@@ -87,7 +87,7 @@ class ArticleFinder:
 
                 covid_related = False 
                 for article_title in potential_articles: 
-                    mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '').replace('\\', '').replace('t', '')
+                    mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '').replace('\\', '')
                     mod_title = ' '.join(mod_title.split())
 
                     if 'css' in mod_title:
@@ -101,7 +101,10 @@ class ArticleFinder:
 
                         intended_link = article_title[1]['href']
 
-                        if intended_link[0] == '/':
+                        if intended_link[0] not in ['h', 'w'] and intended_link != '/':
+                            intended_link = '/' + intended_link
+
+                        if intended_link[0] == '/' or intended_link[0] not in ['h', 'w']:
                             intended_link = file[:-13] + intended_link
 
                         overall.append([mod_title, intended_link]) 
