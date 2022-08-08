@@ -5,6 +5,7 @@ import os
 import shutil
 import time
 import json
+from newspaper import Article
 
 class ArticleFinder:
     
@@ -21,7 +22,7 @@ class ArticleFinder:
         self.crawl()
         self.articles = self.find_articles()
         with open(self.url[self.url.find('.com') + len('.com') + 1:].replace('/', '_')[:-1] + '.json', 'w') as storage:
-            storage.write(json.dumps(self.articles, indent = 4).replace('[', '{').replace(']', '}'))
+            storage.write(json.dumps(self.articles, indent = 4))
 
     def crawl(self):
         self.html_page = requests.get(self.url) 
@@ -41,7 +42,12 @@ class ArticleFinder:
 
         os.mkdir('news_channels') 
 
-        for website in webpages: 
+        cnt = 0
+        
+        for website in webpages:
+            if cnt == 5:
+                break
+
             if website in ArticleFinder.dysfunctional_pages:
                 continue
 
@@ -51,6 +57,7 @@ class ArticleFinder:
                 current_html = str(requests.get('https://' + website).content) 
                 with open('news_channels/' + website + 'html_page.txt', 'w') as rn: 
                     rn.write(current_html)
+                cnt += 1
             except Exception:
                 pass
 
@@ -62,6 +69,9 @@ class ArticleFinder:
         structure = os.listdir('news_channels/') 
 
         overall = [] 
+
+        not_working = 0
+        total_attempts = 0
 
         for file in structure:
             current_path = base_path + file 
@@ -87,7 +97,6 @@ class ArticleFinder:
 
                 covid_related = False 
                 for article_title in potential_articles: 
-                    # mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '').replace('\\', '')
                     mod_title = article_title[1].text
                     mod_title = ' '.join(mod_title.split())
 
@@ -102,13 +111,30 @@ class ArticleFinder:
 
                         intended_link = article_title[1]['href']
 
-                        if intended_link[0] not in ['h', 'w'] and intended_link != '/':
-                            intended_link = '/' + intended_link
+                        # if intended_link[0] not in ['h', 'w'] and intended_link != '/':
+                        #     intended_link = '/' + intended_link
 
                         if intended_link[0] == '/' or intended_link[0] not in ['h', 'w']:
                             intended_link = file[:-13] + intended_link
 
-                        overall.append([mod_title, intended_link]) 
+                        # if intended_link.count('http://') + intended_link.count('https://') == 0:
+                        #     intended_link = 'https://' + intended_link
+
+                        try:
+                            total_attempts += 1
+                            # rn = Article(intended_link)
+                            # rn.download()
+                            # rn.parse()
+                            article = {
+                                'title': mod_title,
+                                'link': intended_link,
+                                'text': "testing"
+                            }
+                            overall.append(article) 
+                        except Exception as e:
+                            print(intended_link)
+                            not_working += 1
+
                         covid_related = False
 
         resultant = [] 
@@ -116,5 +142,7 @@ class ArticleFinder:
         for elem in overall: 
             if elem not in resultant:
                 resultant.append(elem)
+
+        print("total dysfunctional:", not_working, "; total attempts:", total_attempts)
 
         return resultant
