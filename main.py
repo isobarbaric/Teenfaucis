@@ -1,28 +1,25 @@
 from ArticleFinder import ArticleFinder
+import json
+import time
 
-# a = ArticleFinder('https://mediabiasfactcheck.com/pro-science/')
+article_compiler = ArticleFinder()
 
 # get rid of brace formatting
 # wean off news_channels directory
 # clean up rest of code including comments here
 # take rest of code to other project as ipynb and exit this repo
 
-# with open('json/science.json', 'w') as f:
-#     json.dumps(a.articles, indent=4)
+def write_to_storage(url: str, articles: list[str]):
+    filename = url[url.find('.com') + 5:].replace('/', '_')[:-1] + '.json' 
+    with open(filename, 'w') as storage:
+        storage.write(json.dumps(articles, indent = 4))
 
-import time
+science_url = 'https://mediabiasfactcheck.com/pro-science/'
+conspiracy_url = 'https://mediabiasfactcheck.com/conspiracy/'
 
 start = time.time()
-b = ArticleFinder('https://mediabiasfactcheck.com/conspiracy/')
+# a = article_compiler.find_articles(science_url)
+# write_to_storage(science_url, a)
+b = article_compiler.find_articles(conspiracy_url)
+write_to_storage(conspiracy_url, b)
 print(time.time() - start)
-
-# with open('json/conspiracy.json', 'w') as f:
-#     json.dumps(b.articles, indent=4)
-
-# print(a.articles)
-# print(b.articles)
-
-# a = [1, 2, 3]
-# print(a)
-# with open('test.json', 'w', encoding='utf-8') as f:
-#     f.write(json.dumps(a, indent=4))

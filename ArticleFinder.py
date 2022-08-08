@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 import requests
 import os
 import shutil
-import time
-import json
 from newspaper import Article
 
 class ArticleFinder:
@@ -17,16 +15,17 @@ class ArticleFinder:
 
     dysfunctional_pages = ['ieee.org', 'www.naturalawakeningsmag.com', 'libertyvideos.org']
 
-    def __init__(self, url):
-        self.url = url
-        self.crawl()
-        self.articles = self.find_articles()
-        with open(self.url[self.url.find('.com') + len('.com') + 1:].replace('/', '_')[:-1] + '.json', 'w') as storage:
-            storage.write(json.dumps(self.articles, indent = 4))
+    def __init__(self):
+        pass
 
-    def crawl(self):
-        self.html_page = requests.get(self.url) 
-        soup = BeautifulSoup(self.html_page.content, 'lxml') 
+    def find_articles(self, url):
+        self.__crawler(url)
+        articles = self.__finder()
+        return articles
+
+    def __crawler(self, url):
+        html_page = requests.get(url) 
+        soup = BeautifulSoup(html_page.content, 'lxml') 
         news_sites = soup.find_all('span', {'style': 'font-size: 12pt;'}) 
         webpages = [] 
         for news_channel in news_sites: 
@@ -42,34 +41,22 @@ class ArticleFinder:
 
         os.mkdir('news_channels') 
 
-        cnt = 0
-        
         for website in webpages:
-            if cnt == 5:
-                break
-
             if website in ArticleFinder.dysfunctional_pages:
                 continue
-
-            print(website) 
 
             try:
                 current_html = str(requests.get('https://' + website).content) 
                 with open('news_channels/' + website + 'html_page.txt', 'w') as rn: 
                     rn.write(current_html)
-                cnt += 1
             except Exception:
                 pass
 
-        print("Located all Webpages...") 
-
-    def find_articles(self):
+    def __finder(self):
         base_path = "news_channels/" 
-
         structure = os.listdir('news_channels/') 
 
         overall = [] 
-
         not_working = 0
         total_attempts = 0
 
@@ -93,11 +80,12 @@ class ArticleFinder:
                         for anchor in tag.find_all('a'):
                             if not anchor.has_attr('href'):
                                 continue
-                            potential_articles.append([tag, anchor])
+                            potential_articles.append(anchor)
+                potential_articles = list(set(potential_articles))
 
                 covid_related = False 
                 for article_title in potential_articles: 
-                    mod_title = article_title[1].text
+                    mod_title = article_title.text
                     mod_title = ' '.join(mod_title.split())
 
                     if 'css' in mod_title:
@@ -109,7 +97,7 @@ class ArticleFinder:
 
                     if covid_related: 
 
-                        intended_link = article_title[1]['href']
+                        intended_link = article_title['href']
 
                         # if intended_link[0] not in ['h', 'w'] and intended_link != '/':
                         #     intended_link = '/' + intended_link
@@ -117,8 +105,8 @@ class ArticleFinder:
                         if intended_link[0] == '/' or intended_link[0] not in ['h', 'w']:
                             intended_link = file[:-13] + intended_link
 
-                        # if intended_link.count('http://') + intended_link.count('https://') == 0:
-                        #     intended_link = 'https://' + intended_link
+                        if intended_link.count('http://') + intended_link.count('https://') == 0:
+                            intended_link = 'https://' + intended_link
 
                         try:
                             total_attempts += 1
@@ -137,12 +125,7 @@ class ArticleFinder:
 
                         covid_related = False
 
-        resultant = [] 
-
-        for elem in overall: 
-            if elem not in resultant:
-                resultant.append(elem)
-
         print("total dysfunctional:", not_working, "; total attempts:", total_attempts)
 
-        return resultant
+        return overall
+
