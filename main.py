@@ -1,12 +1,11 @@
 from ArticleFinder import ArticleFinder
-import json
 
 a = ArticleFinder('https://mediabiasfactcheck.com/pro-science/')
 
 # with open('json/science.json', 'w') as f:
 #     json.dumps(a.articles, indent=4)
 
-b = ArticleFinder('https://mediabiasfactcheck.com/conspiracy/')
+# b = ArticleFinder('https://mediabiasfactcheck.com/conspiracy/')
 
 # with open('json/conspiracy.json', 'w') as f:
 #     json.dumps(b.articles, indent=4)

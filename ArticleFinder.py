@@ -20,7 +20,7 @@ class ArticleFinder:
         self.url = url
         self.crawl()
         self.articles = self.find_articles()
-        with open('related-articles' + self.url[self.url.find('.com') + len('.com'):].replace('/', '_')[:-1] + '.json', 'w') as storage:
+        with open(self.url[self.url.find('.com') + len('.com') + 1:].replace('/', '_')[:-1] + '.json', 'w') as storage:
             storage.write(json.dumps(self.articles, indent = 4).replace('[', '{').replace(']', '}'))
 
     def crawl(self):
@@ -87,7 +87,8 @@ class ArticleFinder:
 
                 covid_related = False 
                 for article_title in potential_articles: 
-                    mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '').replace('\\', '')
+                    # mod_title = article_title[1].text.replace('\\n', '').replace('\t', '').replace('\\r', '').replace('\\', '')
+                    mod_title = article_title[1].text
                     mod_title = ' '.join(mod_title.split())
 
                     if 'css' in mod_title:
